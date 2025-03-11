@@ -100,11 +100,13 @@ def retrieve_endpoint(request: QueryRequest):
         )
         return response
     
+    # each request can potentially have a list of queries
+    # run the list of queries async
     async def get_pplx_responses(request):    
         query_tasks = []
         for query in request.queries:
             query_tasks.append(asyncio.create_task(make_pplx_call(query)))
-        gathered_responses = asyncio.gather(query_tasks)
+        gathered_responses = asyncio.gather(*query_tasks)
         resp = []
         resp.extend(gathered_responses)
         return resp
