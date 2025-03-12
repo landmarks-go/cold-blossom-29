@@ -40,6 +40,15 @@ This launches the perplexity server, which takes your query and runs async infer
 bash retrieval_launch.sh
 ```
 
+This should be quick and should show:
+
+```
+INFO:     Started server process [356924]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+```
+
 ## Running the PPO training
 
 In another shell, run the PPO training.
