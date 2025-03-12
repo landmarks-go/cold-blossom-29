@@ -102,6 +102,7 @@ async def retrieve_endpoint(request: QueryRequest):
     
     # each request can potentially have a list of queries
     # run the list of queries async
+    print(request.queries)
     async def get_pplx_responses(request):    
         query_tasks = []
         for query in request.queries:

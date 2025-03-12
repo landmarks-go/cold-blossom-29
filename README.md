@@ -2,7 +2,9 @@
 
 ## Data
 
-Data needs to be in the format given in `sample_data.json`.
+Data needs to be in the format given in `sample_data.json`. 
+
+The `train` and `test` are keys of one map, each of which is a list of maps. Each list entry is a map representing a sample.
 
 ```
 {
