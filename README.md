@@ -57,3 +57,21 @@ data.train_files=$DATA_DIR/train_forecast.parquet \
 data.val_files=$DATA_DIR/test_forecast.parquet \
 ```
 
+# Settings, Base LLMs, data location
+
+In `train_ppo.sh`, you can set the following:
+```
+export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
+export DATA_DIR='data/nq_search'
+
+WAND_PROJECT='Search-R1'
+
+export BASE_MODEL='meta-llama/Llama-3.2-3B'
+export EXPERIMENT_NAME=nq-search-r1-ppo-llama3.2-3b-em
+```
+
+This says we need 8 GPUs to train, the data lives in `data/nq_search` (`nq_search_forecast.py` puts the data there as well), and we are using the Llama-3.2-3B model (huggingface notation).
+
+Since models are gated, you will need a valid key.
+
+Logging is done to wandb. You will need a wandb key as well.
