@@ -32,6 +32,8 @@ Then run `python scripts/data_process/nq_search_forecast.py` to process the data
 
 ## Running the perplexity server
 
+In one shell (background or tmux), run the perplexity server.
+
 This launches the perplexity server, which takes your query and runs async inference to perplexity. Changing this to Exa should be straightforward + query optimizations and rewritings.
 
 ```bash
@@ -39,6 +41,8 @@ bash retrieval_launch.sh
 ```
 
 ## Running the PPO training
+
+In another shell, run the PPO training.
 
 ```bash
 bash train_ppo.sh
