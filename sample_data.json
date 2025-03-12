@@ -1,0 +1,306 @@
+{
+    "train": [
+        {
+            "id": "train_0",
+            "question": "Will the South Korean president step down in 2025?",
+            "golden_answers": ["Yes"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_1",
+            "question": "Did Volodymyr Zelensky visit the White House in 2025?",
+            "golden_answers": ["Yes"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_2",
+            "question": "Will Al Green be censured by the House of Representatives?",
+            "golden_answers": ["Yes"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_3",
+            "question": "Will the next US president be a white non hispanic Christian man?",
+            "golden_answers": ["Yes"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_4",
+            "question": "Will Trump establish a nationwide concealed carry?",
+            "golden_answers": ["No"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_5",
+            "question": "Will Zelensky be removed by the Ukrainian parliament this year?",
+            "golden_answers": ["No"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_6",
+            "question": "Will the government be shut down before March 19, 2025?",
+            "golden_answers": ["No"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_7",
+            "question": "Will the ban on supersonic flight over land be lifted by 2028?",
+            "golden_answers": ["No"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_0",
+            "question": "Will the South Korean president step down in 2025?",
+            "golden_answers": ["Yes"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_1",
+            "question": "Did Volodymyr Zelensky visit the White House in 2025?",
+            "golden_answers": ["Yes"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_2",
+            "question": "Will Al Green be censured by the House of Representatives?",
+            "golden_answers": ["Yes"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_3",
+            "question": "Will the next US president be a white non hispanic Christian man?",
+            "golden_answers": ["Yes"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_4",
+            "question": "Will Trump establish a nationwide concealed carry?",
+            "golden_answers": ["No"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_5",
+            "question": "Will Zelensky be removed by the Ukrainian parliament this year?",
+            "golden_answers": ["No"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_6",
+            "question": "Will the government be shut down before March 19, 2025?",
+            "golden_answers": ["No"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_7",
+            "question": "Will the ban on supersonic flight over land be lifted by 2028?",
+            "golden_answers": ["No"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_0",
+            "question": "Will the South Korean president step down in 2025?",
+            "golden_answers": ["Yes"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_1",
+            "question": "Did Volodymyr Zelensky visit the White House in 2025?",
+            "golden_answers": ["Yes"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_2",
+            "question": "Will Al Green be censured by the House of Representatives?",
+            "golden_answers": ["Yes"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_3",
+            "question": "Will the next US president be a white non hispanic Christian man?",
+            "golden_answers": ["Yes"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_4",
+            "question": "Will Trump establish a nationwide concealed carry?",
+            "golden_answers": ["No"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_5",
+            "question": "Will Zelensky be removed by the Ukrainian parliament this year?",
+            "golden_answers": ["No"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_6",
+            "question": "Will the government be shut down before March 19, 2025?",
+            "golden_answers": ["No"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_7",
+            "question": "Will the ban on supersonic flight over land be lifted by 2028?",
+            "golden_answers": ["No"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_0",
+            "question": "Will the South Korean president step down in 2025?",
+            "golden_answers": ["Yes"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_1",
+            "question": "Did Volodymyr Zelensky visit the White House in 2025?",
+            "golden_answers": ["Yes"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_2",
+            "question": "Will Al Green be censured by the House of Representatives?",
+            "golden_answers": ["Yes"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_3",
+            "question": "Will the next US president be a white non hispanic Christian man?",
+            "golden_answers": ["Yes"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_4",
+            "question": "Will Trump establish a nationwide concealed carry?",
+            "golden_answers": ["No"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_5",
+            "question": "Will Zelensky be removed by the Ukrainian parliament this year?",
+            "golden_answers": ["No"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_6",
+            "question": "Will the government be shut down before March 19, 2025?",
+            "golden_answers": ["No"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "train_7",
+            "question": "Will the ban on supersonic flight over land be lifted by 2028?",
+            "golden_answers": ["No"],
+            "metadata": {"0": 0}
+        }
+    ],
+    "test": [
+        {
+            "id": "test_0",
+            "question": "Will Musk go on the daily show before June 2025?",
+            "golden_answers": ["No"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "test_1",
+            "question": "Will AP win in their lawsuit against the White House?",
+            "golden_answers": ["No"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "test_2",
+            "question": "Will xAI opensource Grok 2 before June 2025?",
+            "golden_answers": ["Yes"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "test_3",
+            "question": "Will Ed Martin be confirmed as DC US Attorney?",
+            "golden_answers": ["Yes"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "test_4",
+            "question": "Will Congress pass a law to get rid of the penny?",
+            "golden_answers": ["No"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "test_5",
+            "question": "Will xAI release Grok 4 in 2025?",
+            "golden_answers": ["Yes"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "test_0",
+            "question": "Will Musk go on the daily show before June 2025?",
+            "golden_answers": ["No"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "test_1",
+            "question": "Will AP win in their lawsuit against the White House?",
+            "golden_answers": ["No"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "test_2",
+            "question": "Will xAI opensource Grok 2 before June 2025?",
+            "golden_answers": ["Yes"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "test_3",
+            "question": "Will Ed Martin be confirmed as DC US Attorney?",
+            "golden_answers": ["Yes"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "test_4",
+            "question": "Will Congress pass a law to get rid of the penny?",
+            "golden_answers": ["No"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "test_5",
+            "question": "Will xAI release Grok 4 in 2025?",
+            "golden_answers": ["Yes"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "test_0",
+            "question": "Will Musk go on the daily show before June 2025?",
+            "golden_answers": ["No"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "test_1",
+            "question": "Will AP win in their lawsuit against the White House?",
+            "golden_answers": ["No"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "test_2",
+            "question": "Will xAI opensource Grok 2 before June 2025?",
+            "golden_answers": ["Yes"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "test_3",
+            "question": "Will Ed Martin be confirmed as DC US Attorney?",
+            "golden_answers": ["Yes"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "test_4",
+            "question": "Will Congress pass a law to get rid of the penny?",
+            "golden_answers": ["No"],
+            "metadata": {"0": 0}
+        },
+        {
+            "id": "test_5",
+            "question": "Will xAI release Grok 4 in 2025?",
+            "golden_answers": ["Yes"],
+            "metadata": {"0": 0}
+        }
+    ]
+}

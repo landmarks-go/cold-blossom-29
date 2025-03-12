@@ -50,10 +50,10 @@ if __name__ == '__main__':
     data_source = 'nq' # just keep this because reward function looks for this and not 
     # gonna bother with redefining a verl file.
 
-    dataset = datasets.load_dataset('RUC-NLPIR/FlashRAG_datasets', 'nq')
+    # dataset = datasets.load_dataset('RUC-NLPIR/FlashRAG_datasets', 'nq')
 
-    train_dataset = dataset['train']
-    test_dataset = dataset['test']
+    train_dataset = datasets.load_dataset('json', data_files='sample_data.json', field='train')['train']
+    test_dataset = datasets.load_dataset('json', data_files='sample_data.json', field='test')['train']
 
     # add a row to each data item that represents a unique id
     def make_map_fn(split):
@@ -93,8 +93,8 @@ if __name__ == '__main__':
     local_dir = args.local_dir
     hdfs_dir = args.hdfs_dir
 
-    train_dataset.to_parquet(os.path.join(local_dir, 'train.parquet'))
-    test_dataset.to_parquet(os.path.join(local_dir, 'test.parquet'))
+    train_dataset.to_parquet(os.path.join(local_dir, 'train_forecast.parquet'))
+    test_dataset.to_parquet(os.path.join(local_dir, 'test_forecast.parquet'))
 
     if hdfs_dir is not None:
         makedirs(hdfs_dir)

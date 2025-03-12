@@ -65,7 +65,7 @@ app = FastAPI()
 
 
 @app.post("/retrieve")
-def retrieve_endpoint(request: QueryRequest):
+async def retrieve_endpoint(request: QueryRequest):
     """
     Endpoint that accepts queries and performs retrieval.
     Input format:
@@ -95,10 +95,10 @@ def retrieve_endpoint(request: QueryRequest):
         },
         ]
         response = await client.chat.completions.create(
-            model="sonar-pro",
+            model="sonar",
             messages=messages,
         )
-        return response
+        return [{'document': {'contents': response.choices[0].message.content}, 'score': 1}]
     
     # each request can potentially have a list of queries
     # run the list of queries async
@@ -106,13 +106,13 @@ def retrieve_endpoint(request: QueryRequest):
         query_tasks = []
         for query in request.queries:
             query_tasks.append(asyncio.create_task(make_pplx_call(query)))
-        gathered_responses = asyncio.gather(*query_tasks)
+        gathered_responses = await asyncio.gather(*query_tasks)
         resp = []
         resp.extend(gathered_responses)
         return resp
     
-    resp = asyncio.run(get_pplx_responses(request))
-    return {"result": resp}
+
+    return {"result": await get_pplx_responses(request)}
 
 
 if __name__ == "__main__":

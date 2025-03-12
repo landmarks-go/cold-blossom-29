@@ -327,7 +327,7 @@ app = FastAPI()
 # 1) Build a config (could also parse from arguments).
 #    In real usage, you'd parse your CLI arguments or environment variables.
 config = Config(
-    retrieval_method = "e5",  # or "dense"
+    retrieval_method = "bm25",  # or "dense"
     index_path=args.index_path,
     corpus_path=args.corpus_path,
     retrieval_topk=args.topk,
@@ -340,7 +340,9 @@ config = Config(
 )
 
 # 2) Instantiate a global retriever so it is loaded once and reused.
+print('Loading retriever...')
 retriever = get_retriever(config)
+print('Retriever loaded.')
 
 @app.post("/retrieve")
 def retrieve_endpoint(request: QueryRequest):
@@ -374,9 +376,16 @@ def retrieve_endpoint(request: QueryRequest):
             resp.append(combined)
         else:
             resp.append(single_result)
+    print(resp)
     return {"result": resp}
 
 
 if __name__ == "__main__":
     # 3) Launch the server. By default, it listens on http://127.0.0.1:8000
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    results, scores = retriever.batch_search(
+        query_list=["What is the capital of France?", "Explain neural networks."],
+        num=3,
+        return_score=False
+    )
+    print(results)
+    # uvicorn.run(app, host="0.0.0.0", port=8000)

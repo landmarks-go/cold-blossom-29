@@ -406,6 +406,8 @@ If I want to give the final answer, I should put the answer between <answer> and
 
     def _passages2string(self, retrieval_result):
         format_reference = ''
+        # want retrieval_result to be a list of dicts, not just a dict.
+        # so the retrieval should output a list of a dictionary with a key 'document'
         for idx, doc_item in enumerate(retrieval_result):
             
             content = doc_item['document']['contents']

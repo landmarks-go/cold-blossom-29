@@ -1,3 +1,7 @@
+'''
+python search_r1/search/retrieval_request.py
+'''
+
 import requests
 
 # URL for your local FastAPI server
@@ -5,7 +9,7 @@ url = "http://127.0.0.1:8000/retrieve"
 
 # Example payload
 payload = {
-    "queries": ["What is the capital of France?", "Explain neural networks."] * 200,
+    "queries": ["What is the capital of France?"],
     "topk": 5,
     "return_scores": True
 }
