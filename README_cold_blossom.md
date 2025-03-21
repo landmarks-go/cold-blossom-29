@@ -4,7 +4,7 @@
 
 Please install the required packages and make the required environments per the README.md file.
 
-In addition, install the `openai` package in the retriever environment.
+In addition, install the `openai` package in the retriever environment and ensure `tenacity` is installed in the retriever environment.
 
 Be sure to have a Perplexity key and WandB key ready.
 
