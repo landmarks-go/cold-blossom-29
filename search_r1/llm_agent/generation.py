@@ -98,7 +98,7 @@ class LLMGenerationManager:
 
         return next_obs_ids
 
-    def _update_rolling_state(self, rollings, cur_responses: torch.Tensor, 
+    def _update_rolling_state(self, rollings: DataProto, cur_responses: torch.Tensor, 
                             next_obs_ids: torch.Tensor) -> Dict:
         """Update rolling state with new responses and observations."""
         # Concatenate and handle padding        
@@ -115,33 +115,64 @@ class LLMGenerationManager:
         # Cut to appropriate length
         effective_len = new_attention_mask.sum(dim=1).max()
         max_len = min(self.config.max_prompt_length, effective_len)
-        
-        return DataProto.from_dict({
+
+        new_rollings = DataProto.from_dict({
             'input_ids': new_input_ids[:, -max_len:],
             'position_ids': new_position_ids[:, -max_len:],
             'attention_mask': new_attention_mask[:, -max_len:]
         })
+        new_rollings.meta_info.update(rollings.meta_info)
+        
+        return new_rollings
+
+    def _info_masked_concatenate_with_padding(self, 
+                prompt: torch.Tensor, 
+                prompt_with_mask: torch.Tensor, 
+                response: torch.Tensor, 
+                info: torch.Tensor = None,
+                pad_to_left: bool = True
+            ) -> torch.Tensor:
+        """Concatenate tensors and handle padding. Additionally, create a mask (info_mask) to cover the information block if it exists."""
+        pad_id = self.tokenizer.pad_token_id
+        tensors = [prompt, response]
+        tensors_with_mask = [prompt_with_mask, response]
+        if info is not None:
+            tensors.append(info)
+            info_mask = torch.full(info.size(), pad_id, dtype=info.dtype, device=info.device) # information mask
+            tensors_with_mask.append(info_mask)
+        
+        concatenated = torch.cat(tensors, dim=1)
+        concatenated_with_info = torch.cat(tensors_with_mask, dim=1)
+        mask = concatenated != pad_id if pad_to_left else concatenated == pad_id
+        sorted_indices = mask.to(torch.int64).argsort(dim=1, stable=True)
+        padded_tensor = concatenated.gather(1, sorted_indices)
+        padded_tensor_with_info = concatenated_with_info.gather(1, sorted_indices)
+
+        return padded_tensor, padded_tensor_with_info
 
     def _update_right_side(self, right_side: Dict, 
                           cur_responses: torch.Tensor,
                           next_obs_ids: torch.Tensor = None) -> Dict:
         """Update right side state."""
         if next_obs_ids != None:
-            responses = self.tensor_fn.concatenate_with_padding([
-                right_side['responses'],
-                cur_responses,
-                next_obs_ids
-            ], pad_to_left=False)
+            responses, responses_with_info_mask = self._info_masked_concatenate_with_padding(
+                    right_side['responses'],
+                    right_side['responses_with_info_mask'],
+                    cur_responses,
+                    next_obs_ids, 
+                    pad_to_left=False
+                )
         else:
-            responses = self.tensor_fn.concatenate_with_padding([
-                right_side['responses'],
-                cur_responses,
-            ], pad_to_left=False)
-        
+            responses, responses_with_info_mask = self._info_masked_concatenate_with_padding(
+                    right_side['responses'],
+                    right_side['responses_with_info_mask'],
+                    cur_responses,
+                    pad_to_left=False
+                )
         effective_len = self.tensor_fn.create_attention_mask(responses).sum(dim=1).max()
         max_len = min(self.config.max_prompt_length, effective_len)
         
-        return {'responses': responses[:, :max_len]}
+        return {'responses': responses[:, :max_len], 'responses_with_info_mask': responses_with_info_mask[:, :max_len]}
 
     def _generate_with_gpu_padding(self, active_batch: DataProto) -> DataProto:
         """
@@ -194,9 +225,12 @@ class LLMGenerationManager:
         """Run main LLM generation loop."""
         
         original_left_side = {'input_ids': initial_input_ids[:, -self.config.max_start_length:]}
-        original_right_side = {'responses': initial_input_ids[:, []]}
+        original_right_side = {'responses': initial_input_ids[:, []], 'responses_with_info_mask': initial_input_ids[:, []]}
         
         active_mask = torch.ones(gen_batch.batch['input_ids'].shape[0], dtype=torch.bool)
+        turns_stats = torch.ones(gen_batch.batch['input_ids'].shape[0], dtype=torch.int)
+        valid_action_stats = torch.zeros(gen_batch.batch['input_ids'].shape[0], dtype=torch.int)
+        valid_search_stats = torch.zeros(gen_batch.batch['input_ids'].shape[0], dtype=torch.int)
         active_num_list = [active_mask.sum().item()]
         rollings = gen_batch
 
@@ -220,13 +254,16 @@ class LLMGenerationManager:
             responses_ids, responses_str = self.tensor_fn._example_level_pad(responses_ids, responses_str, active_mask)
 
             # Execute in environment and process observations
-            next_obs, dones = self.execute_predictions(
+            next_obs, dones, valid_action, is_search = self.execute_predictions(
                 responses_str, self.tokenizer.pad_token, active_mask
             )
             
             curr_active_mask = torch.tensor([not done for done in dones], dtype=torch.bool)
             active_mask = active_mask * curr_active_mask
             active_num_list.append(active_mask.sum().item())
+            turns_stats[curr_active_mask] += 1
+            valid_action_stats += torch.tensor(valid_action, dtype=torch.int)
+            valid_search_stats += torch.tensor(is_search, dtype=torch.int)
 
             next_obs_ids = self._process_next_obs(next_obs)
             
@@ -260,13 +297,20 @@ class LLMGenerationManager:
             responses_ids, responses_str = self.tensor_fn._example_level_pad(responses_ids, responses_str, active_mask)
 
             # # Execute in environment and process observations
-            _, dones = self.execute_predictions(
+            _, dones, valid_action, is_search = self.execute_predictions(
                 responses_str, self.tokenizer.pad_token, active_mask, do_search=False
             )
 
             curr_active_mask = torch.tensor([not done for done in dones], dtype=torch.bool)
             active_mask = active_mask * curr_active_mask
             active_num_list.append(active_mask.sum().item())
+            valid_action_stats += torch.tensor(valid_action, dtype=torch.int)
+            valid_search_stats += torch.tensor(is_search, dtype=torch.int)
+            
+            meta_info['turns_stats'] = turns_stats.tolist()
+            meta_info['active_mask'] = active_mask.tolist()
+            meta_info['valid_action_stats'] = valid_action_stats.tolist()
+            meta_info['valid_search_stats'] = valid_search_stats.tolist()
 
             original_right_side = self._update_right_side(
                 original_right_side,
@@ -295,6 +339,10 @@ class LLMGenerationManager:
             self.tensor_fn.create_attention_mask(left_side['input_ids']),
             self.tensor_fn.create_attention_mask(final_output['responses'])
         ], dim=1)
+        final_output['info_mask'] = torch.cat([
+            self.tensor_fn.create_attention_mask(left_side['input_ids']),
+            self.tensor_fn.create_attention_mask(final_output['responses_with_info_mask'])
+        ], dim=1)
         
         final_output['position_ids'] = self.tensor_fn.create_position_ids(
             final_output['attention_mask']
@@ -320,7 +368,7 @@ class LLMGenerationManager:
             List of observation strings
         """
         cur_actions, contents = self.postprocess_predictions(predictions)
-        next_obs, dones = [], []
+        next_obs, dones, valid_action, is_search = [], [], [], []
         
         search_queries = [content for action, content in zip(cur_actions, contents) if action == 'search']
         if do_search:
@@ -334,22 +382,30 @@ class LLMGenerationManager:
             if not active:
                 next_obs.append('')
                 dones.append(1)
+                valid_action.append(0)
+                is_search.append(0)
             else:
                 if action == 'answer':
                     next_obs.append('')
                     dones.append(1)
+                    valid_action.append(1)
+                    is_search.append(0)
                 elif action == 'search':
                     next_obs.append(f'\n\n<information>{search_results.pop(0).strip()}</information>\n\n')
                     dones.append(0)
+                    valid_action.append(1)
+                    is_search.append(1)
                 else:
                     next_obs.append(f'\nMy previous action is invalid. \
 If I want to search, I should put the query between <search> and </search>. \
 If I want to give the final answer, I should put the answer between <answer> and </answer>. Let me try again.\n')
                     dones.append(0)
+                    valid_action.append(0)
+                    is_search.append(0)
             
         assert len(search_results) == 0
             
-        return next_obs, dones
+        return next_obs, dones, valid_action, is_search
 
     def postprocess_predictions(self, predictions: List[Any]) -> Tuple[List[int], List[bool]]:
         """

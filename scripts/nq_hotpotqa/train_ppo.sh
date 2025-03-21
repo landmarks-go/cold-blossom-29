@@ -1,25 +1,27 @@
-export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
-export DATA_DIR='data/nq_search'
+data_name=nq_hotpotqa_train
 
-WAND_PROJECT='Search-R1'
+export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
+export DATA_DIR=data/${data_name} # first download the data from https://huggingface.co/datasets/PeterJinGo/nq_hotpotqa_train
+
+WAND_PROJECT="Search-R1"
 
 export BASE_MODEL='meta-llama/Llama-3.2-3B'
-export EXPERIMENT_NAME=nq-search-r1-ppo-llama3.2-3b-em
+export EXPERIMENT_NAME=${data_name}-search-r1-ppo-llama3.2-3b-em
 # export BASE_MODEL='meta-llama/Llama-3.2-3B-Instruct'
-# export EXPERIMENT_NAME=nq-search-r1-ppo-llama3.2-3b-it-em
+# export EXPERIMENT_NAME=${data_name}-search-r1-ppo-llama3.2-3b-it-em
 # export BASE_MODEL='meta-llama/Llama-3.1-8B'
-# export EXPERIMENT_NAME=nq-search-r1-ppo-llama3.1-8b-em
+# export EXPERIMENT_NAME=${data_name}-search-r1-ppo-llama3.1-8b-em
 # export BASE_MODEL='meta-llama/Llama-3.1-8B-Instruct'
-# export EXPERIMENT_NAME=nq-search-r1-ppo-llama3.1-8b-it-em
+# export EXPERIMENT_NAME=${data_name}-search-r1-ppo-llama3.1-8b-it-em
 
 # export BASE_MODEL='Qwen/Qwen2.5-3B'
-# export EXPERIMENT_NAME=nq-search-r1-ppo-qwen2.5-3b-em
+# export EXPERIMENT_NAME=${data_name}-search-r1-ppo-qwen2.5-3b-em
 # export BASE_MODEL='Qwen/Qwen2.5-3B-Instruct'
-# export EXPERIMENT_NAME=nq-search-r1-ppo-qwen2.5-3b-it-em
+# export EXPERIMENT_NAME=${data_name}-search-r1-ppo-qwen2.5-3b-it-em
 # export BASE_MODEL='Qwen/Qwen2.5-7B'
-# export EXPERIMENT_NAME=nq-search-r1-ppo-qwen2.5-7b-em
+# export EXPERIMENT_NAME=${data_name}-search-r1-ppo-qwen2.5-7b-em
 # export BASE_MODEL='Qwen/Qwen2.5-7B-Instruct'
-# export EXPERIMENT_NAME=nq-search-r1-ppo-qwen2.5-7b-it-em
+# export EXPERIMENT_NAME=${data_name}-search-r1-ppo-qwen2.5-7b-it-em
 
 # set -x
 export VLLM_ATTENTION_BACKEND=XFORMERS # vllm + qwen2-7b with flash_attn has some issues
@@ -27,12 +29,12 @@ export VLLM_ATTENTION_BACKEND=XFORMERS # vllm + qwen2-7b with flash_attn has som
 # max_prompt_length = (config['training']['max_start_length'] + config['training']['max_response_length'] * (config['training']['max_turns'] - 1) + config['training']['max_obs_length'] * config['training']['max_turns'])
 
 PYTHONUNBUFFERED=1 python3 -m verl.trainer.main_ppo \
-    data.train_files=$DATA_DIR/train_forecast.parquet \
-    data.val_files=$DATA_DIR/test_forecast.parquet \
+    data.train_files=$DATA_DIR/train.parquet \
+    data.val_files=$DATA_DIR/test.parquet \
     data.train_data_num=null \
     data.val_data_num=null \
-    data.train_batch_size=16 \
-    data.val_batch_size=8 \
+    data.train_batch_size=512 \
+    data.val_batch_size=256 \
     data.max_prompt_length=4096 \
     data.max_response_length=500 \
     data.max_start_length=2048 \
@@ -84,7 +86,7 @@ PYTHONUNBUFFERED=1 python3 -m verl.trainer.main_ppo \
     trainer.total_training_steps=305 \
     trainer.default_hdfs_dir=null \
     trainer.default_local_dir=verl_checkpoints/$EXPERIMENT_NAME \
-    max_turns=2 \
+    max_turns=4 \
     retriever.url="http://127.0.0.1:8000/retrieve" \
     retriever.topk=3 \
     2>&1 | tee $EXPERIMENT_NAME.log
