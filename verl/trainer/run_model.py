@@ -38,6 +38,7 @@ class RewardManager():
         self.num_examine = num_examine  # the number of batches of decoded responses to print to the console
         self.format_score = format_score
         self.print_outputs = print_outputs
+        
     def __call__(self, data: DataProto):
         """We will expand this function gradually based on the available datasets"""
 
@@ -188,7 +189,7 @@ def main_task(config):
     reward_fn = RewardManager(tokenizer=tokenizer, num_examine=0)
 
     # Note that we always use function-based RM for validation
-    val_reward_fn = RewardManager(tokenizer=tokenizer, num_examine=1)
+    val_reward_fn = RewardManager(tokenizer=tokenizer, num_examine=1, print_outputs=True)
 
     resource_pool_manager = ResourcePoolManager(resource_pool_spec=resource_pool_spec, mapping=mapping)
     trainer = RayPPOTrainer(config=config,
@@ -200,7 +201,7 @@ def main_task(config):
                             val_reward_fn=val_reward_fn,
                             )
     trainer.init_workers()
-    trainer.fit()
+    trainer._validate(print_outputs=True)
 
 
 if __name__ == '__main__':

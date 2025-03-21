@@ -436,7 +436,7 @@ class RayPPOTrainer(object):
             self.config.actor_rollout_ref.actor.optim.total_training_steps = total_training_steps
             self.config.critic.optim.total_training_steps = total_training_steps
 
-    def _validate(self):
+    def _validate(self, print_outputs=False):
         """
         The training loop of PPO with global metric computation.
         Accumulates metrics across all batches before computing final statistics.
@@ -488,9 +488,11 @@ class RayPPOTrainer(object):
                 # unpad
                 test_output_gen_batch = unpad_dataproto(test_output_gen_batch_padded, pad_size=pad_size)
                 print('validation generation end')
+                
+                
 
                 test_batch = test_batch.union(test_output_gen_batch)
-
+                response_ids = test_batch.batch['responses']
                 # evaluate using reward_function
                 # for certain reward function (e.g. sandbox), the generation can overlap with reward
                 reward_tensor = self.val_reward_fn(test_batch)
@@ -522,8 +524,11 @@ class RayPPOTrainer(object):
                     
                     test_batch = test_batch.union(final_gen_batch_output)
                     
+
                     for key in test_batch.batch.keys():
                         test_batch.batch[key] = test_batch.batch[key].long()
+                        
+                   
                     
                     # evaluate using reward_function
                     # for certain reward function (e.g. sandbox), the generation can overlap with reward
@@ -654,6 +659,37 @@ class RayPPOTrainer(object):
                                                     prefix=logging_prefix)
         metrics.update(global_balance_stats)
 
+    def foward(self):
+        logger = self.logger
+        self.global_steps = 0
+        # perform validation before training
+        # currently, we only support validation using the reward_function.
+        if self.val_reward_fn is not None and self.config.trainer.get('val_before_train', True):
+            val_metrics = self._validate()
+            pprint(f'Initial validation metrics: {val_metrics}')
+            logger.log(data=val_metrics, step=self.global_steps)
+            if self.config.trainer.get('val_only', False):
+                return
+        
+        gen_config = GenerationConfig(
+            max_turns=self.config.max_turns,
+            max_start_length=self.config.data.max_start_length,
+            max_prompt_length=self.config.data.max_prompt_length,
+            max_response_length=self.config.data.max_response_length,
+            max_obs_length=self.config.data.max_obs_length,
+            num_gpus=self.config.trainer.n_gpus_per_node,
+            no_think_rl=self.config.algorithm.no_think_rl,
+            search_url = self.config.retriever.url,
+            topk = self.config.retriever.topk,
+        )
+        
+        generation_manager = LLMGenerationManager(
+            tokenizer=self.tokenizer,
+            actor_rollout_wg=self.actor_rollout_wg,
+            config=gen_config,
+        )
+        
+    
     def fit(self):
         """
         The training loop of PPO.
