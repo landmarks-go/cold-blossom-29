@@ -106,6 +106,7 @@ async def retrieve_endpoint(request: QueryRequest):
             output = [{'document': {'contents': response.choices[0].message.content}, 'score': 1}]
         except Exception as e:
             print(e)
+            output = [{'document': {'contents': "Issue searching resources. Please try again later."}, 'score': 1}]
 
         return output
     
