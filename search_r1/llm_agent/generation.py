@@ -278,8 +278,15 @@ class LLMGenerationManager:
                 responses_ids,
                 next_obs_ids
             )
-            
+        
+        # meta info should be updated regardless of active mask
+        meta_info['turns_stats'] = turns_stats.tolist()
+        meta_info['active_mask'] = active_mask.tolist()
+        meta_info['valid_action_stats'] = valid_action_stats.tolist()
+        meta_info['valid_search_stats'] = valid_search_stats.tolist()
+        
         # final LLM rollout
+        print("ACTIVE_TRAJ_NUM:", active_num_list, 'Active mask', active_mask)
         if active_mask.sum():
             rollings.batch = self.tensor_fn.cut_to_effective_len(
                 rollings.batch,
@@ -317,7 +324,7 @@ class LLMGenerationManager:
                 responses_ids,
             )
         
-        print("ACTIVE_TRAJ_NUM:", active_num_list)
+        
         
         return self._compose_final_output(original_left_side, original_right_side, meta_info)
 
