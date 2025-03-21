@@ -10,4 +10,6 @@ retriever=intfloat/e5-base-v2
 #                                             --topk 3 \
 #                                             --retriever_model $retriever
 
+pplx_key=$(sed -n '3p' /home/ubuntu/cold-blossom-29/keys.log | cut -d'=' -f2)
+
 python search_r1/search/perplexity_server.py --pplx_key $pplx_key
