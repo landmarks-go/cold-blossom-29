@@ -6,7 +6,8 @@ Please install the required packages and make the required environments per the 
 
 In addition, install the `openai` package in the retriever environment and ensure `tenacity` is installed in the retriever environment.
 
-Be sure to have a Perplexity key and WandB key ready.
+Be sure to have a Perplexity key and WandB key ready, as well as login to Huggingface.
+
 
 ## Data
 
@@ -94,3 +95,15 @@ This says we need 8 GPUs to train, the data lives in `data/nq_search` (`nq_searc
 Since models are gated, you will need a valid key.
 
 Logging is done to wandb. You will need a wandb key as well.
+
+## Running Inference (makeshift)
+
+Currently, in inference script requires you to write all your questions in `questions.txt`. Each question is new line delimited. 
+
+Start the perplexity server in the `retriever` environment with `bash retrieval_launch.sh`.
+
+In another bash screen, start the `searchr1` environment and run `./run_ppo.sh` to run inference. This process will convert your questions into a parquet file and run the evaluation loop on your questions.
+
+This process will create an `answers.txt` file in the same directory. 
+
+This is a makeshift solution and still requires multigpu support due to verl and ray. 
