@@ -4,6 +4,9 @@ import warnings
 from typing import List, Dict, Optional
 import argparse
 import asyncio
+import requests
+from tenacity import retry, stop_after_attempt, wait_random
+
 
 
 import uvicorn
@@ -40,7 +43,7 @@ messages = [
 
 # chat completion without streaming
 response = client.chat.completions.create(
-    model="sonar-pro",
+    model="sonar",
     messages=messages,
 )
 
@@ -78,6 +81,7 @@ async def retrieve_endpoint(request: QueryRequest):
     if not request.topk:
         request.topk = 1  # fallback to default
 
+    @retry(stop=stop_after_attempt(6), wait=wait_random(multiplier=1, max=5))
     async def make_pplx_call(query):
         messages = [
         {
@@ -98,11 +102,17 @@ async def retrieve_endpoint(request: QueryRequest):
             model="sonar",
             messages=messages,
         )
-        return [{'document': {'contents': response.choices[0].message.content}, 'score': 1}]
+        try:
+            output = [{'document': {'contents': response.choices[0].message.content}, 'score': 1}]
+        except Exception as e:
+            print(e)
+
+        return output
     
     # each request can potentially have a list of queries
     # run the list of queries async
     print(request.queries)
+    
     async def get_pplx_responses(request):    
         query_tasks = []
         for query in request.queries:
@@ -112,10 +122,13 @@ async def retrieve_endpoint(request: QueryRequest):
         resp.extend(gathered_responses)
         return resp
     
-
-    return {"result": await get_pplx_responses(request)}
+    rr = await get_pplx_responses(request)
+    return {"result": rr}
 
 
 if __name__ == "__main__":
     # 3) Launch the server. By default, it listens on http://127.0.0.1:8000
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+
+

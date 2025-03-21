@@ -1,5 +1,13 @@
 # Running forecasts 
 
+## Packages
+
+Please install the required packages and make the required environments per the README.md file.
+
+In addition, install the `openai` package in the retriever environment.
+
+Be sure to have a Perplexity key and WandB key ready.
+
 ## Data
 
 Data needs to be in the format given in `sample_data.json`. 
